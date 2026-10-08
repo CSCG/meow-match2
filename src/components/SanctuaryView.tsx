@@ -19,6 +19,7 @@ import {
   Download
 } from 'lucide-react';
 import { ExportModal } from './ExportModal';
+import sanctuaryBgImg from '../assets/images/meow_sanctuary_bg_1791448366161.jpg';
 
 interface SanctuaryViewProps {
   gameState: UserGameState;
@@ -184,40 +185,43 @@ export const SanctuaryView: React.FC<SanctuaryViewProps> = ({
         </div>
       </div>
 
-      {/* Sanctuary Garden & Deck Scenery */}
+      {/* Sanctuary Garden & Deck Scenery with 3D Casual Game Backdrop */}
       <div className="relative flex-1 w-full max-w-6xl mx-auto overflow-hidden">
-        {/* Background Landscape: Sunny Pool, Ocean/Garden Horizon, Palm Trees */}
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-200 via-emerald-100 to-emerald-400">
-          {/* Distant Sunny Sea / Horizon */}
-          <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-sky-400 via-teal-300 to-sky-100 opacity-80" />
+        {/* Background Image */}
+        <img
+          src={sanctuaryBgImg}
+          alt="Sanctuary Garden Background"
+          referrerPolicy="no-referrer"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none filter brightness-95 saturate-110"
+        />
 
-          {/* Sunbeams */}
-          <div className="absolute -top-10 left-1/4 w-80 h-80 bg-yellow-200/40 rounded-full blur-3xl pointer-events-none" />
+        {/* Ambient Sunbeams & Shimmer */}
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-400/10 via-transparent to-emerald-950/25 pointer-events-none" />
+        <div className="absolute -top-10 left-1/3 w-96 h-96 bg-amber-200/20 rounded-full blur-3xl pointer-events-none animate-sunbeam" />
 
-          {/* Pool & Sun Deck Patio */}
-          <div className="absolute top-28 left-0 right-0 h-44 bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 opacity-60 rounded-[40px] mx-8 border-4 border-white/60 shadow-inner" />
-
-          {/* Lush Green Lawn Ground */}
-          <div className={`absolute top-44 left-0 right-0 bottom-0 rounded-t-[50px] shadow-2xl border-t-8 transition-colors duration-500 ${
-            getStyleIdx('clean_lawn') === 1
-              ? 'bg-gradient-to-b from-lime-500 to-emerald-700 border-lime-400'
-              : getStyleIdx('clean_lawn') === 2
-              ? 'bg-gradient-to-b from-teal-600 to-emerald-800 border-teal-400'
-              : 'bg-gradient-to-b from-emerald-500 to-green-700 border-emerald-400'
-          }`}>
-            {/* Garden Stepping Stones */}
-            <div className="absolute top-8 left-1/3 w-16 h-10 bg-stone-300/80 rounded-full rotate-6 shadow" />
-            <div className="absolute top-16 left-1/2 w-20 h-12 bg-stone-300/80 rounded-full -rotate-12 shadow" />
-            <div className="absolute top-24 left-2/3 w-18 h-10 bg-stone-300/80 rounded-full rotate-12 shadow" />
-
-            {/* Little lawn daisy / clover blooms for style 1 */}
+        {/* Customized Ground Accents when clean_lawn is customized */}
+        {isBuilt('clean_lawn') && (
+          <div className="absolute inset-0 pointer-events-none">
             {getStyleIdx('clean_lawn') === 1 && (
-              <div className="absolute inset-0 pointer-events-none opacity-40 text-xs flex justify-around items-center p-8">
-                <span>🌼</span><span>☘️</span><span>🌼</span><span>☘️</span>
+              <div className="absolute bottom-16 left-0 right-0 flex justify-around opacity-70 text-lg">
+                <span className="animate-pulse">🌼</span>
+                <span>☘️</span>
+                <span className="animate-pulse">🌸</span>
+                <span>☘️</span>
+                <span className="animate-pulse">🌼</span>
+              </div>
+            )}
+            {getStyleIdx('clean_lawn') === 2 && (
+              <div className="absolute bottom-16 left-0 right-0 flex justify-around opacity-70 text-lg">
+                <span className="animate-pulse">🌿</span>
+                <span>🍀</span>
+                <span className="animate-pulse">🌻</span>
+                <span>🍀</span>
+                <span className="animate-pulse">🌿</span>
               </div>
             )}
           </div>
-        </div>
+        )}
 
         {/* RESTORED FURNITURE & OBJECTS (Interactive 3-way customizable nodes) */}
 
@@ -466,25 +470,39 @@ const UnbuiltMarker: React.FC<{
 
 // Visual Components for the 3-Way Style Choices
 const GazeboVisual: React.FC<{ styleIdx: number }> = ({ styleIdx }) => {
-  // 0: Tropical Tiki Thatch, 1: Victorian Rose Pavilion, 2: Modern Nordic Timber Deck
   if (styleIdx === 1) {
     // Victorian Rose Pavilion
     return (
-      <svg viewBox="0 0 200 140" className="w-full h-full drop-shadow-xl">
-        <polygon points="100,10 180,45 20,45" fill="#fbcfe8" stroke="#f43f5e" strokeWidth="3" />
-        <rect x="94" y="2" width="12" height="10" fill="#f43f5e" />
-        <circle cx="100" cy="2" r="5" fill="#fb7185" />
-        {/* Columns */}
-        <rect x="35" y="45" width="10" height="75" fill="#ffffff" stroke="#e2e8f0" strokeWidth="2" />
-        <rect x="75" y="45" width="10" height="75" fill="#ffffff" stroke="#e2e8f0" strokeWidth="2" />
-        <rect x="115" y="45" width="10" height="75" fill="#ffffff" stroke="#e2e8f0" strokeWidth="2" />
-        <rect x="155" y="45" width="10" height="75" fill="#ffffff" stroke="#e2e8f0" strokeWidth="2" />
-        {/* Base */}
-        <rect x="25" y="115" width="150" height="15" rx="4" fill="#ffffff" stroke="#f43f5e" strokeWidth="2" />
-        {/* Climbing pink roses */}
-        <circle cx="40" cy="65" r="5" fill="#f43f5e" />
-        <circle cx="78" cy="85" r="5" fill="#f43f5e" />
-        <circle cx="158" cy="70" r="5" fill="#f43f5e" />
+      <svg viewBox="0 0 200 140" className="w-full h-full filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]">
+        <defs>
+          <linearGradient id="roseDomeGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#fdf2f8" />
+            <stop offset="50%" stopColor="#fbcfe8" />
+            <stop offset="100%" stopColor="#f43f5e" />
+          </linearGradient>
+          <linearGradient id="marbleColumn" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="50%" stopColor="#f1f5f9" />
+            <stop offset="100%" stopColor="#cbd5e1" />
+          </linearGradient>
+        </defs>
+        {/* Dome Roof */}
+        <path d="M 20 46 Q 100 -5 180 46 Z" fill="url(#roseDomeGrad)" stroke="#be185d" strokeWidth="2.5" />
+        <circle cx="100" cy="5" r="7" fill="#fbbf24" stroke="#d97706" strokeWidth="1.5" />
+        {/* Fluted Marble Columns */}
+        <rect x="34" y="46" width="12" height="72" rx="2" fill="url(#marbleColumn)" stroke="#94a3b8" strokeWidth="1.5" />
+        <rect x="74" y="46" width="12" height="72" rx="2" fill="url(#marbleColumn)" stroke="#94a3b8" strokeWidth="1.5" />
+        <rect x="114" y="46" width="12" height="72" rx="2" fill="url(#marbleColumn)" stroke="#94a3b8" strokeWidth="1.5" />
+        <rect x="154" y="46" width="12" height="72" rx="2" fill="url(#marbleColumn)" stroke="#94a3b8" strokeWidth="1.5" />
+        {/* Marble Plinth Base */}
+        <rect x="20" y="116" width="160" height="16" rx="5" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2" />
+        {/* Climbing English Rose Vines */}
+        <path d="M 38 116 Q 48 80 40 50" stroke="#16a34a" strokeWidth="3" fill="none" />
+        <circle cx="42" cy="70" r="6" fill="#f43f5e" stroke="#9f1239" strokeWidth="1" />
+        <circle cx="36" cy="90" r="5" fill="#fb7185" />
+        <path d="M 158 116 Q 150 80 156 50" stroke="#16a34a" strokeWidth="3" fill="none" />
+        <circle cx="154" cy="75" r="6" fill="#f43f5e" stroke="#9f1239" strokeWidth="1" />
+        <circle cx="160" cy="95" r="5" fill="#fb7185" />
       </svg>
     );
   }
@@ -492,81 +510,149 @@ const GazeboVisual: React.FC<{ styleIdx: number }> = ({ styleIdx }) => {
   if (styleIdx === 2) {
     // Modern Nordic Timber Deck
     return (
-      <svg viewBox="0 0 200 140" className="w-full h-full drop-shadow-xl">
-        <polygon points="20,35 180,30 180,42 20,47" fill="#78350f" stroke="#451a03" strokeWidth="2" />
-        <rect x="35" y="45" width="8" height="75" fill="#b45309" />
-        <rect x="157" y="45" width="8" height="75" fill="#b45309" />
-        <rect x="20" y="115" width="160" height="18" rx="2" fill="#d97706" stroke="#78350f" strokeWidth="2" />
-        {/* Canvas Roof */}
-        <polygon points="25,35 100,15 175,30" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2" />
+      <svg viewBox="0 0 200 140" className="w-full h-full filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]">
+        <defs>
+          <linearGradient id="nordicWood" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#b45309" />
+            <stop offset="50%" stopColor="#d97706" />
+            <stop offset="100%" stopColor="#78350f" />
+          </linearGradient>
+        </defs>
+        {/* Architectural Beams */}
+        <polygon points="18,34 182,30 182,42 18,46" fill="#78350f" stroke="#451a03" strokeWidth="1.5" />
+        <rect x="32" y="42" width="10" height="76" rx="2" fill="url(#nordicWood)" stroke="#78350f" strokeWidth="1.5" />
+        <rect x="158" y="42" width="10" height="76" rx="2" fill="url(#nordicWood)" stroke="#78350f" strokeWidth="1.5" />
+        {/* Slat Platform */}
+        <rect x="16" y="116" width="168" height="18" rx="4" fill="url(#nordicWood)" stroke="#78350f" strokeWidth="2" />
+        <line x1="20" y1="122" x2="180" y2="122" stroke="#451a03" strokeWidth="1" opacity="0.6" />
+        {/* Clean Ivory Sailcloth Canopy */}
+        <polygon points="24,34 100,12 176,30" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
+        <polygon points="24,34 100,12 100,16 24,38" fill="#e2e8f0" />
       </svg>
     );
   }
 
-  // 0: Tropical Thatched Gazebo
+  // Style 0: Tropical Thatched Tiki Pavilion
   return (
-    <svg viewBox="0 0 200 140" className="w-full h-full drop-shadow-xl">
-      {/* Bamboo Poles */}
-      <rect x="40" y="45" width="12" height="75" fill="#d97706" rx="3" stroke="#92400e" strokeWidth="2" />
-      <rect x="80" y="45" width="10" height="75" fill="#d97706" rx="3" stroke="#92400e" strokeWidth="2" />
-      <rect x="120" y="45" width="10" height="75" fill="#d97706" rx="3" stroke="#92400e" strokeWidth="2" />
-      <rect x="150" y="45" width="12" height="75" fill="#d97706" rx="3" stroke="#92400e" strokeWidth="2" />
+    <svg viewBox="0 0 200 140" className="w-full h-full filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]">
+      <defs>
+        <linearGradient id="bambooGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#f59e0b" />
+          <stop offset="50%" stopColor="#fde68a" />
+          <stop offset="100%" stopColor="#d97706" />
+        </linearGradient>
+        <linearGradient id="thatchRoof" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fef08a" />
+          <stop offset="40%" stopColor="#f59e0b" />
+          <stop offset="100%" stopColor="#b45309" />
+        </linearGradient>
+      </defs>
+      {/* Bamboo Posts */}
+      <rect x="36" y="44" width="12" height="74" rx="4" fill="url(#bambooGrad)" stroke="#92400e" strokeWidth="1.8" />
+      <rect x="76" y="44" width="10" height="74" rx="3" fill="url(#bambooGrad)" stroke="#92400e" strokeWidth="1.8" />
+      <rect x="116" y="44" width="10" height="74" rx="3" fill="url(#bambooGrad)" stroke="#92400e" strokeWidth="1.8" />
+      <rect x="152" y="44" width="12" height="74" rx="4" fill="url(#bambooGrad)" stroke="#92400e" strokeWidth="1.8" />
+      {/* Bamboo Rings */}
+      <line x1="36" y1="65" x2="48" y2="65" stroke="#92400e" strokeWidth="2" />
+      <line x1="36" y1="90" x2="48" y2="90" stroke="#92400e" strokeWidth="2" />
+      <line x1="152" y1="65" x2="164" y2="65" stroke="#92400e" strokeWidth="2" />
+      <line x1="152" y1="90" x2="164" y2="90" stroke="#92400e" strokeWidth="2" />
       {/* Floor Deck */}
-      <rect x="30" y="115" width="140" height="16" rx="4" fill="#b45309" stroke="#78350f" strokeWidth="2" />
-      {/* Thatch Tiki Roof */}
-      <polygon points="100,5 190,52 10,52" fill="#f59e0b" stroke="#b45309" strokeWidth="3" />
-      <path d="M 20 52 Q 35 60 50 52 Q 65 60 80 52 Q 95 60 110 52 Q 125 60 140 52 Q 155 60 170 52 Q 185 60 190 52" fill="#d97706" />
+      <rect x="26" y="116" width="148" height="16" rx="4" fill="#92400e" stroke="#78350f" strokeWidth="2" />
+      {/* Thatched Palm Roof */}
+      <polygon points="100,6 194,54 6,54" fill="url(#thatchRoof)" stroke="#78350f" strokeWidth="2.5" />
+      <path d="M 12 54 Q 30 64 48 54 Q 66 64 84 54 Q 102 64 120 54 Q 138 64 156 54 Q 174 64 192 54" fill="#d97706" />
     </svg>
   );
 };
 
 const CatTreeVisual: React.FC<{ styleIdx: number }> = ({ styleIdx }) => (
-  <svg viewBox="0 0 120 160" className="w-full h-full drop-shadow-lg">
-    {/* Base */}
-    <rect x="15" y="140" width="90" height="14" rx="4" fill={styleIdx === 1 ? '#38bdf8' : '#b45309'} />
-    {/* Scratching Pole */}
-    <rect x="52" y="25" width="16" height="115" fill="#fef3c7" stroke="#d97706" strokeWidth="2" />
-    {/* Platforms */}
-    <rect x="20" y="95" width="45" height="12" rx="4" fill={styleIdx === 1 ? '#ec4899' : '#15803d'} />
-    <rect x="55" y="55" width="50" height="12" rx="4" fill={styleIdx === 1 ? '#06b6d4' : '#15803d'} />
-    {/* Top Crow's Nest Bed */}
-    <rect x="35" y="20" width="50" height="16" rx="8" fill={styleIdx === 1 ? '#f472b6' : '#22c55e'} />
-    {/* Hanging mouse toy */}
-    <line x1="30" y1="95" x2="30" y2="115" stroke="#78350f" strokeWidth="1.5" />
-    <circle cx="30" cy="118" r="4" fill="#ef4444" />
+  <svg viewBox="0 0 120 160" className="w-full h-full filter drop-shadow-[0_6px_12px_rgba(0,0,0,0.3)]">
+    <defs>
+      <linearGradient id="sisalRope" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stopColor="#fef3c7" />
+        <stop offset="50%" stopColor="#fde68a" />
+        <stop offset="100%" stopColor="#d97706" />
+      </linearGradient>
+    </defs>
+    {/* Base Platform */}
+    <rect x="12" y="140" width="96" height="16" rx="6" fill={styleIdx === 1 ? '#0284c7' : '#92400e'} stroke="#451a03" strokeWidth="2" />
+    {/* Main Sisal Post */}
+    <rect x="52" y="24" width="16" height="118" fill="url(#sisalRope)" stroke="#b45309" strokeWidth="1.5" />
+    {/* Sisal Grooves */}
+    {[...Array(12)].map((_, i) => (
+      <line key={i} x1="52" y1={30 + i * 9} x2="68" y2={30 + i * 9} stroke="#b45309" strokeWidth="1.2" opacity="0.6" />
+    ))}
+    {/* Mid Platform Left */}
+    <rect x="16" y="94" width="48" height="14" rx="5" fill={styleIdx === 1 ? '#f472b6' : '#16a34a'} stroke="#14532d" strokeWidth="1.5" />
+    {/* Mid Platform Right */}
+    <rect x="56" y="56" width="52" height="14" rx="5" fill={styleIdx === 1 ? '#38bdf8' : '#16a34a'} stroke="#14532d" strokeWidth="1.5" />
+    {/* Penthouse Bed */}
+    <rect x="34" y="16" width="52" height="18" rx="8" fill={styleIdx === 1 ? '#ec4899' : '#22c55e'} stroke="#15803d" strokeWidth="2" />
+    {/* Dangling Toy Mouse */}
+    <line x1="28" y1="94" x2="28" y2="116" stroke="#78350f" strokeWidth="1.5" strokeDasharray="3,2" />
+    <circle cx="28" cy="119" r="4.5" fill="#f43f5e" />
+    <line x1="28" y1="123" x2="24" y2="128" stroke="#f43f5e" strokeWidth="1.2" />
   </svg>
 );
 
 const CatBedVisual: React.FC<{ styleIdx: number }> = ({ styleIdx }) => (
-  <svg viewBox="0 0 120 90" className="w-full h-full drop-shadow-md">
-    <ellipse cx="60" cy="55" rx="50" ry="26" fill={styleIdx === 0 ? '#7c3aed' : styleIdx === 1 ? '#e2e8f0' : '#f59e0b'} />
-    <ellipse cx="60" cy="50" rx="40" ry="20" fill={styleIdx === 0 ? '#a78bfa' : styleIdx === 1 ? '#ffffff' : '#fef08a'} />
-    <circle cx="60" cy="46" r="6" fill="#f43f5e" opacity="0.6" />
+  <svg viewBox="0 0 120 90" className="w-full h-full filter drop-shadow-[0_6px_12px_rgba(0,0,0,0.3)]">
+    <defs>
+      <radialGradient id="bedVelvetGrad" cx="50%" cy="45%" r="55%">
+        <stop offset="0%" stopColor={styleIdx === 0 ? '#c084fc' : styleIdx === 1 ? '#ffffff' : '#fde047'} />
+        <stop offset="70%" stopColor={styleIdx === 0 ? '#9333ea' : styleIdx === 1 ? '#cbd5e1' : '#f59e0b'} />
+        <stop offset="100%" stopColor={styleIdx === 0 ? '#6b21a8' : styleIdx === 1 ? '#94a3b8' : '#b45309'} />
+      </radialGradient>
+    </defs>
+    {/* Outer Plush Donut Bolster */}
+    <ellipse cx="60" cy="54" rx="52" ry="28" fill="url(#bedVelvetGrad)" stroke="#4c1d95" strokeWidth="2" />
+    {/* Inner Tufted Cushion */}
+    <ellipse cx="60" cy="50" rx="42" ry="20" fill={styleIdx === 0 ? '#e9d5ff' : styleIdx === 1 ? '#f8fafc' : '#fef08a'} />
+    {/* Golden Royal Crown Crest Badge */}
+    <path d="M 54 48 L 56 42 L 60 45 L 64 42 L 66 48 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="0.8" />
+    <circle cx="60" cy="40" r="1.5" fill="#ef4444" />
   </svg>
 );
 
 const FountainVisual: React.FC<{ styleIdx: number }> = ({ styleIdx }) => (
-  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
-    {/* Basin */}
-    <ellipse cx="50" cy="80" rx="45" ry="16" fill="#cbd5e1" stroke="#64748b" strokeWidth="2" />
-    <ellipse cx="50" cy="78" rx="38" ry="12" fill="#38bdf8" />
-    {/* Tier 2 */}
-    <rect x="44" y="45" width="12" height="34" fill="#94a3b8" />
-    <ellipse cx="50" cy="45" rx="26" ry="10" fill="#cbd5e1" stroke="#64748b" strokeWidth="2" />
-    <ellipse cx="50" cy="44" rx="22" ry="7" fill="#38bdf8" />
-    {/* Water spout */}
-    <path d="M 50 44 Q 40 25 35 45" fill="none" stroke="#67e8f9" strokeWidth="2.5" />
-    <path d="M 50 44 Q 60 25 65 45" fill="none" stroke="#67e8f9" strokeWidth="2.5" />
+  <svg viewBox="0 0 100 100" className="w-full h-full filter drop-shadow-[0_6px_14px_rgba(0,0,0,0.3)]">
+    <defs>
+      <radialGradient id="waterFlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#bae6fd" />
+        <stop offset="60%" stopColor="#38bdf8" />
+        <stop offset="100%" stopColor="#0284c7" />
+      </radialGradient>
+    </defs>
+    {/* Lower Tier Marble Basin */}
+    <ellipse cx="50" cy="80" rx="46" ry="16" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="2" />
+    <ellipse cx="50" cy="78" rx="40" ry="12" fill="url(#waterFlow)" />
+    {/* Center Pedestal */}
+    <rect x="44" y="44" width="12" height="36" rx="2" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="1.5" />
+    {/* Upper Tier Marble Bowl */}
+    <ellipse cx="50" cy="45" rx="28" ry="11" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="2" />
+    <ellipse cx="50" cy="44" rx="23" ry="8" fill="url(#waterFlow)" />
+    {/* Bubbling Water Jets */}
+    <path d="M 50 44 Q 38 24 32 46" fill="none" stroke="#67e8f9" strokeWidth="3" strokeLinecap="round" className="animate-pulse" />
+    <path d="M 50 44 Q 62 24 68 46" fill="none" stroke="#67e8f9" strokeWidth="3" strokeLinecap="round" className="animate-pulse" />
+    {/* Water Droplets Splash */}
+    <circle cx="32" cy="46" r="2" fill="#ffffff" />
+    <circle cx="68" cy="46" r="2" fill="#ffffff" />
+    <circle cx="50" cy="22" r="2.5" fill="#ffffff" />
   </svg>
 );
 
 const FenceVisual: React.FC<{ styleIdx: number }> = ({ styleIdx }) => (
-  <div className="w-full flex items-center justify-around">
-    {[...Array(10)].map((_, i) => (
+  <div className="w-full flex items-center justify-around filter drop-shadow-md">
+    {[...Array(12)].map((_, i) => (
       <div
         key={i}
-        className={`w-4 h-10 rounded-t-lg shadow ${
-          styleIdx === 1 ? 'bg-amber-800' : styleIdx === 2 ? 'bg-slate-700' : 'bg-white border border-slate-300'
+        className={`w-3.5 h-11 rounded-t-lg transition-colors border ${
+          styleIdx === 1
+            ? 'bg-gradient-to-b from-amber-700 to-amber-900 border-amber-950'
+            : styleIdx === 2
+            ? 'bg-gradient-to-b from-slate-600 to-slate-800 border-slate-900'
+            : 'bg-gradient-to-b from-white to-slate-200 border-slate-300'
         }`}
       />
     ))}
@@ -574,23 +660,27 @@ const FenceVisual: React.FC<{ styleIdx: number }> = ({ styleIdx }) => (
 );
 
 const FlowersVisual: React.FC<{ styleIdx: number }> = ({ styleIdx }) => (
-  <div className="flex gap-2 text-2xl animate-pulse">
-    {styleIdx === 0 ? '🪻🌱🪻🌱' : styleIdx === 1 ? '🌺🌴🌺🌴' : '🌻🌼🌻🌼'}
+  <div className="flex items-center gap-2 bg-emerald-900/60 backdrop-blur-sm px-3 py-1.5 rounded-full border border-emerald-500/50 shadow-lg text-2xl">
+    <span className="animate-bounce">🦋</span>
+    {styleIdx === 0 && <span>🪻🌸🪻🌸</span>}
+    {styleIdx === 1 && <span>🌺🌴🌺🌴</span>}
+    {styleIdx === 2 && <span>🌻🌼🌻🌼</span>}
   </div>
 );
 
 const LoungersVisual: React.FC<{ styleIdx: number }> = ({ styleIdx }) => (
-  <div className="flex items-center gap-3 text-3xl">
-    <span>🏖️</span>
-    <span>🍹</span>
+  <div className="flex items-center gap-3 bg-amber-950/60 backdrop-blur-sm px-3.5 py-1.5 rounded-2xl border border-amber-500/50 shadow-lg text-2xl">
+    <span className="drop-shadow">🏖️</span>
+    <span className="drop-shadow animate-pulse">🍹</span>
+    <span className="drop-shadow">🌴</span>
   </div>
 );
 
 const FeastTableVisual: React.FC<{ styleIdx: number }> = ({ styleIdx }) => (
-  <div className="bg-amber-100/90 border-2 border-amber-400 px-3 py-1.5 rounded-2xl shadow-lg flex items-center gap-2 text-xl">
-    <span>🍣</span>
-    <span>🥛</span>
-    <span>🐟</span>
-    <span>✨</span>
+  <div className="bg-gradient-to-r from-amber-950/90 to-amber-900/90 border-2 border-amber-400 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2.5 text-2xl backdrop-blur-sm">
+    <span className="drop-shadow">🍣</span>
+    <span className="drop-shadow">🥛</span>
+    <span className="drop-shadow">🐟</span>
+    <span className="animate-spin text-lg text-yellow-300">✨</span>
   </div>
 );

@@ -17,6 +17,7 @@ import { sounds } from '../audio/soundManager';
 import { Volume2, VolumeX, Pause, Hammer, Hand, RefreshCw, Sparkles, Check, ArrowLeft } from 'lucide-react';
 import { PauseModal } from './PauseModal';
 import { BodhiLogo } from './BodhiLogo';
+import puzzleBgImg from '../assets/images/meow_puzzle_bg_1791448344664.jpg';
 
 interface PuzzleBoardProps {
   level: LevelConfig;
@@ -50,6 +51,7 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
   const [showOutOfMovesModal, setShowOutOfMovesModal] = useState(false);
   const [isVictory, setIsVictory] = useState(false);
   const [hintTiles, setHintTiles] = useState<{ from: { row: number; col: number }; to: { row: number; col: number } } | null>(null);
+  const [floatingScores, setFloatingScores] = useState<{ id: number; x: number; y: number; text: string }[]>([]);
 
   const activeCat = gameState.cats[gameState.activeCatId];
   const [showPauseModal, setShowPauseModal] = useState(false);
@@ -462,7 +464,23 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
 
     checkStatuesUncovered(workingGrass);
     setGrass(workingGrass);
-    setScore(s => s + coords.length * 50);
+    const earnedPoints = coords.length * 60;
+    setScore(s => s + earnedPoints);
+
+    // Spawn floating score popup at match center
+    if (coords.length > 0) {
+      const mid = coords[Math.floor(coords.length / 2)];
+      const newScore = {
+        id: Date.now() + Math.random(),
+        x: mid.col * tileSize + tileSize / 2,
+        y: mid.row * tileSize + tileSize / 2,
+        text: `+${earnedPoints}`
+      };
+      setFloatingScores(prev => [...prev.slice(-8), newScore]);
+      setTimeout(() => {
+        setFloatingScores(prev => prev.filter(s => s.id !== newScore.id));
+      }, 950);
+    }
 
     // Apply gravity
     await new Promise(res => setTimeout(res, 220));
@@ -498,6 +516,24 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
       const messages = ["Sweet!", "Purr-fect!", "Meow-velous!", "PAW-SOME!!"];
       triggerComboPop(messages[Math.min(newCombo - 2, messages.length - 1)]);
     }
+
+    // Spawn floating score numbers for cascade matches
+    matches.forEach(m => {
+      if (m.tiles.length > 0) {
+        const mid = m.tiles[Math.floor(m.tiles.length / 2)];
+        const pts = m.tiles.length * (60 + newCombo * 20);
+        const newScore = {
+          id: Date.now() + Math.random(),
+          x: mid.col * tileSize + tileSize / 2,
+          y: mid.row * tileSize + tileSize / 2,
+          text: `+${pts}`
+        };
+        setFloatingScores(prev => [...prev.slice(-8), newScore]);
+        setTimeout(() => {
+          setFloatingScores(prev => prev.filter(s => s.id !== newScore.id));
+        }, 950);
+      }
+    });
 
     const workingGrid = currentGrid.map(r => [...r]);
     const workingGrass = currentGrass.map(r => [...r]);
@@ -579,53 +615,64 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
   };
 
   return (
-    <div className={`relative w-full h-full flex flex-col items-center justify-between p-2 sm:p-4 bg-gradient-to-b from-sky-200 via-amber-50 to-emerald-100 select-none overflow-hidden ${
+    <div className={`relative w-full h-full flex flex-col items-center justify-between p-2 sm:p-4 select-none overflow-hidden ${
       screenShake ? 'animate-[wiggle_0.3s_ease-in-out]' : ''
     }`}>
-      {/* Top Banner (Wooden Plank styling like Ember's Meow Match!) */}
-      <div className="w-full max-w-2xl bg-amber-800/90 text-white rounded-3xl p-2 sm:p-3 shadow-xl border-4 border-amber-600 flex items-center justify-between backdrop-blur-sm z-30">
+      {/* High-Fidelity Casual Game Conservatory Sanctuary Backdrop */}
+      <img
+        src={puzzleBgImg}
+        alt="Sanctuary Backdrop"
+        referrerPolicy="no-referrer"
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none filter brightness-90 saturate-110"
+      />
+      {/* Ambient Vignette & Sunbeams */}
+      <div className="absolute inset-0 bg-gradient-to-b from-amber-950/40 via-transparent to-amber-950/60 pointer-events-none" />
+      <div className="absolute -top-20 left-1/4 w-96 h-96 bg-amber-200/20 rounded-full blur-3xl pointer-events-none animate-sunbeam" />
+
+      {/* Top Banner (Carved Wooden Plaque with Gold Trim & 3D Counters) */}
+      <div className="w-full max-w-2xl bg-gradient-to-b from-amber-800 via-amber-900 to-amber-950 text-white rounded-3xl p-2 sm:p-3 shadow-[0_12px_28px_rgba(0,0,0,0.5)] border-3 border-amber-500/90 ring-2 ring-amber-950/60 flex items-center justify-between backdrop-blur-md z-30">
         <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             onClick={onExit}
-            className="p-2 bg-amber-700 hover:bg-amber-600 active:scale-95 rounded-2xl border-2 border-amber-400 text-white transition-all"
+            className="p-2 bg-gradient-to-b from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 active:scale-95 rounded-2xl border-2 border-amber-300 shadow text-white transition-all"
             title="Return to Sanctuary"
           >
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 drop-shadow" />
           </button>
           <button
             onClick={() => setShowPauseModal(true)}
-            className="p-2 bg-amber-950/80 hover:bg-amber-900 active:scale-95 rounded-2xl border-2 border-amber-500 text-amber-300 transition-all flex items-center justify-center"
+            className="p-2 bg-amber-950/90 hover:bg-amber-900 active:scale-95 rounded-2xl border-2 border-amber-400 text-amber-300 shadow transition-all flex items-center justify-center"
             title="Pause Game (Bodhi Industries Menu)"
           >
             <Pause className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <div>
-            <div className="text-[10px] sm:text-xs uppercase tracking-wider text-amber-200 font-bold leading-tight">
-              Lvl {level.id}
+            <div className="text-[10px] sm:text-xs uppercase tracking-wider text-amber-300 font-extrabold leading-tight">
+              Level {level.id}
             </div>
-            <div className="text-xs sm:text-sm font-black text-white font-['Fredoka'] truncate max-w-[85px] sm:max-w-[170px] leading-tight">
+            <div className="text-xs sm:text-sm font-black text-white font-['Fredoka'] truncate max-w-[85px] sm:max-w-[170px] leading-tight drop-shadow">
               {level.name}
             </div>
           </div>
         </div>
 
-        {/* Level Objectives Trackers */}
-        <div className="flex items-center gap-1.5 sm:gap-3 bg-amber-950/60 px-2 sm:px-3 py-1 sm:py-1.5 rounded-2xl border border-amber-700/60">
+        {/* Level Objectives Trackers (Golden Parchment Plaque) */}
+        <div className="flex items-center gap-1.5 sm:gap-3 bg-amber-950/80 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-2xl border border-amber-600/70 shadow-inner">
           {objectives.map((obj, idx) => {
             const isDone = obj.current >= obj.target;
             return (
               <div key={idx} className="flex items-center gap-1 text-xs font-bold font-['Fredoka']">
                 <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
                   {obj.type === 'color' && obj.color && (
-                    <TileVisual tile={{ id: 'obj', row: 0, col: 0, color: obj.color, powerUp: null }} size={20} />
+                    <TileVisual tile={{ id: 'obj', row: 0, col: 0, color: obj.color, powerUp: null }} size={22} />
                   )}
                   {obj.type === 'grass' && <span className="text-base sm:text-lg">🌱</span>}
                   {obj.type === 'statues' && <span className="text-base sm:text-lg">🐱</span>}
                   {obj.type === 'milk' && <span className="text-base sm:text-lg">🥛</span>}
                 </div>
-                <div className={`text-[11px] sm:text-xs ${isDone ? 'text-emerald-400' : 'text-amber-100'}`}>
+                <div className={`text-[11px] sm:text-xs ${isDone ? 'text-emerald-400 font-black' : 'text-amber-100 font-bold'}`}>
                   {isDone ? (
-                    <span className="flex items-center text-emerald-400 font-bold"><Check className="w-3.5 h-3.5" /></span>
+                    <span className="flex items-center text-emerald-400 font-black filter drop-shadow-[0_0_4px_rgba(52,211,153,0.8)]"><Check className="w-4 h-4" /></span>
                   ) : (
                     `${obj.current}/${obj.target}`
                   )}
@@ -635,11 +682,11 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
           })}
         </div>
 
-        {/* Moves Left Badge */}
+        {/* Moves Left Badge (Tactile 3D Golden Dial) */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <div className="flex flex-col items-center justify-center bg-gradient-to-b from-amber-400 to-amber-500 text-amber-950 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-2xl border-2 border-white shadow-md">
+          <div className="flex flex-col items-center justify-center bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 text-amber-950 px-3 sm:px-4 py-0.5 sm:py-1 rounded-2xl border-2 border-white shadow-[0_4px_12px_rgba(245,158,11,0.5)]">
             <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider leading-none">Moves</span>
-            <span className={`text-lg sm:text-2xl font-black font-['Fredoka'] leading-tight ${movesLeft <= 5 ? 'text-red-700 animate-pulse' : ''}`}>
+            <span className={`text-lg sm:text-2xl font-black font-['Fredoka'] leading-tight drop-shadow-sm ${movesLeft <= 5 ? 'text-red-700 animate-pulse' : ''}`}>
               {movesLeft}
             </span>
           </div>
@@ -647,7 +694,7 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
       </div>
 
       {/* Main Play Area with Cheerful Cats beside the board */}
-      <div className="relative w-full max-w-4xl flex-1 flex items-center justify-center gap-2 sm:gap-4 my-1 sm:my-2">
+      <div className="relative w-full max-w-4xl flex-1 flex items-center justify-center gap-2 sm:gap-4 my-1 sm:my-2 z-20">
         {/* Left Side: Cheerleader Cat (Piper or Bodacious!) */}
         <div className="hidden md:flex flex-col items-center justify-end h-full pb-4">
           <CatVisual
@@ -659,24 +706,41 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
               setCatSpeech(activeCat.quotes[Math.floor(Math.random() * activeCat.quotes.length)]);
             }}
           />
-          <div className="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-amber-900 shadow border border-amber-200 mt-1">
+          <div className="bg-amber-950/80 backdrop-blur-sm px-3.5 py-1 rounded-full text-xs font-bold text-amber-200 shadow-lg border border-amber-500/60 mt-1">
             {activeCat.name} ({activeCat.breed})
           </div>
         </div>
 
-        {/* Center: Puzzle Grid */}
-        <div className="relative p-1.5 sm:p-2 bg-emerald-700/80 rounded-3xl shadow-2xl border-4 border-amber-400/90 backdrop-blur-sm">
-          {/* Combo Floating Text */}
+        {/* Center: Luxury Carved Wooden Puzzle Frame */}
+        <div className="relative p-2 sm:p-3.5 bg-gradient-to-b from-amber-800 via-amber-900 to-amber-950 rounded-[34px] shadow-[0_25px_50px_rgba(0,0,0,0.6),0_10px_20px_rgba(0,0,0,0.4)] border-4 border-amber-500/90 ring-4 ring-amber-950/60 backdrop-blur-md">
+          {/* Brass Corner Rivets */}
+          <div className="absolute top-2 left-2 w-3 h-3 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 shadow border border-amber-200" />
+          <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 shadow border border-amber-200" />
+          <div className="absolute bottom-2 left-2 w-3 h-3 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 shadow border border-amber-200" />
+          <div className="absolute bottom-2 right-2 w-3 h-3 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 shadow border border-amber-200" />
+
+          {/* Combo Floating Text Banner */}
           {comboText && (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
-              <div className="text-3xl sm:text-5xl font-black text-amber-300 font-['Fredoka'] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] animate-bounce text-center">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none animate-banner-pop">
+              <div className="text-4xl sm:text-6xl font-black text-amber-300 font-['Fredoka'] drop-shadow-[0_4px_0_#92400e] drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] text-center whitespace-nowrap">
                 {comboText}
               </div>
             </div>
           )}
 
+          {/* Floating Matched Score Numbers */}
+          {floatingScores.map(s => (
+            <div
+              key={s.id}
+              style={{ left: s.x, top: s.y }}
+              className="absolute pointer-events-none z-40 font-['Fredoka'] font-black text-xl sm:text-2xl text-amber-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] animate-float-up"
+            >
+              {s.text}
+            </div>
+          ))}
+
           {/* Under-Grid Statues Layer */}
-          <div className="absolute inset-1.5 sm:inset-2 pointer-events-none overflow-hidden rounded-2xl">
+          <div className="absolute inset-2 sm:inset-3.5 pointer-events-none overflow-hidden rounded-2xl">
             {statues.map(statue => (
               <CatStatueVisual key={statue.id} statue={statue} tileSize={tileSize} />
             ))}
@@ -712,13 +776,19 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
                   );
                 }
 
+                // Recessed 3D Wooden Socket
+                const isEvenCell = (r + c) % 2 === 0;
                 return (
                   <div
                     key={`${r}-${c}`}
                     onTouchStart={(e) => handleTileTouchStart(r, c, e)}
                     onTouchEnd={(e) => handleTileTouchEnd(r, c, e)}
                     style={{ width: `${tileSize}px`, height: `${tileSize}px` }}
-                    className="relative rounded-xl bg-emerald-800/40 border border-emerald-600/30 flex items-center justify-center overflow-hidden"
+                    className={`relative rounded-2xl flex items-center justify-center overflow-hidden transition-colors ${
+                      isEvenCell
+                        ? 'bg-amber-950/60 shadow-[inset_0_3px_6px_rgba(0,0,0,0.5),0_1px_1px_rgba(255,255,255,0.06)] border border-amber-800/40'
+                        : 'bg-amber-900/40 shadow-[inset_0_3px_6px_rgba(0,0,0,0.4),0_1px_1px_rgba(255,255,255,0.06)] border border-amber-800/30'
+                    }`}
                   >
                     {/* Grass Overlay */}
                     <GrassOverlay level={grassLevel} size={tileSize} />
