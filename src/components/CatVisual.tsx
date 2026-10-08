@@ -300,6 +300,24 @@ export const CatVisual: React.FC<CatVisualProps> = ({
             <line x1="110" y1="146" x2="122" y2="144" stroke="#ffffff" strokeWidth="2" strokeDasharray="2,2" />
           </g>
         )}
+
+        {cat.selectedCostume === 'witch_hat' && (
+          <g id="costume_witch_hat">
+            <ellipse cx="100" cy="48" rx="34" ry="10" fill="#312e81" stroke="#1e1b4b" strokeWidth="2" />
+            <polygon points="76,46 100,12 124,46" fill="#4338ca" stroke="#312e81" strokeWidth="2" />
+            <rect x="84" y="42" width="32" height="5" rx="1.5" fill="#f59e0b" />
+            <circle cx="100" cy="44.5" r="2.5" fill="#fef08a" />
+          </g>
+        )}
+
+        {cat.selectedCostume === 'gentleman_monocle' && (
+          <g id="costume_monocle">
+            <circle cx="120" cy="85" r="14" fill="#38bdf8" fillOpacity="0.25" stroke="#f59e0b" strokeWidth="2.5" />
+            <path d="M 134 85 Q 146 100 138 128" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="3,2" />
+            <circle cx="138" cy="128" r="3" fill="#d97706" />
+            <line x1="114" y1="78" x2="126" y2="92" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" opacity="0.7" />
+          </g>
+        )}
       </svg>
     </div>
   );

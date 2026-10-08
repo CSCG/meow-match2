@@ -73,7 +73,25 @@ export const PauseModal: React.FC<PauseModalProps> = ({
                         {obj.type === 'milk' && <span className="text-base">🥛</span>}
                       </div>
                       <span className="capitalize text-slate-200">
-                        {obj.type === 'color' ? `${obj.color} fish` : obj.type === 'statues' ? 'Cat statues' : `${obj.type}`}
+                        {obj.type === 'color'
+                          ? obj.color === 'fish'
+                            ? 'Cyan Fish'
+                            : obj.color === 'mouse'
+                            ? 'Pink Mice'
+                            : obj.color === 'clover'
+                            ? 'Lucky Clovers'
+                            : obj.color === 'lemon'
+                            ? 'Yellow Lemons'
+                            : obj.color === 'bird'
+                            ? 'Red Birds'
+                            : 'Purple Yarn'
+                          : obj.type === 'statues'
+                          ? 'Cat statues'
+                          : obj.type === 'grass'
+                          ? 'Lawn grass'
+                          : obj.type === 'milk'
+                          ? 'Milk bottles'
+                          : `${obj.type}`}
                       </span>
                     </div>
 

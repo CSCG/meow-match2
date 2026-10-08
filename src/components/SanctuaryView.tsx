@@ -198,15 +198,33 @@ export const SanctuaryView: React.FC<SanctuaryViewProps> = ({
           <div className="absolute top-28 left-0 right-0 h-44 bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400 opacity-60 rounded-[40px] mx-8 border-4 border-white/60 shadow-inner" />
 
           {/* Lush Green Lawn Ground */}
-          <div className="absolute top-44 left-0 right-0 bottom-0 bg-gradient-to-b from-emerald-500 to-green-700 rounded-t-[50px] shadow-2xl border-t-8 border-emerald-400">
+          <div className={`absolute top-44 left-0 right-0 bottom-0 rounded-t-[50px] shadow-2xl border-t-8 transition-colors duration-500 ${
+            getStyleIdx('clean_lawn') === 1
+              ? 'bg-gradient-to-b from-lime-500 to-emerald-700 border-lime-400'
+              : getStyleIdx('clean_lawn') === 2
+              ? 'bg-gradient-to-b from-teal-600 to-emerald-800 border-teal-400'
+              : 'bg-gradient-to-b from-emerald-500 to-green-700 border-emerald-400'
+          }`}>
             {/* Garden Stepping Stones */}
             <div className="absolute top-8 left-1/3 w-16 h-10 bg-stone-300/80 rounded-full rotate-6 shadow" />
             <div className="absolute top-16 left-1/2 w-20 h-12 bg-stone-300/80 rounded-full -rotate-12 shadow" />
             <div className="absolute top-24 left-2/3 w-18 h-10 bg-stone-300/80 rounded-full rotate-12 shadow" />
+
+            {/* Little lawn daisy / clover blooms for style 1 */}
+            {getStyleIdx('clean_lawn') === 1 && (
+              <div className="absolute inset-0 pointer-events-none opacity-40 text-xs flex justify-around items-center p-8">
+                <span>🌼</span><span>☘️</span><span>🌼</span><span>☘️</span>
+              </div>
+            )}
           </div>
         </div>
 
         {/* RESTORED FURNITURE & OBJECTS (Interactive 3-way customizable nodes) */}
+
+        {/* 0. Clean Lawn / Grounds Style Node */}
+        {!isBuilt('clean_lawn') && (
+          <UnbuiltMarker taskKey="clean_lawn" onOpenTasks={onOpenTasks} left="32%" top="58%" label="Tidy Lawn Grounds" />
+        )}
 
         {/* 1. Gazebo / Pavilion (Top Center) */}
         {isBuilt('gazebo') ? (
@@ -228,10 +246,19 @@ export const SanctuaryView: React.FC<SanctuaryViewProps> = ({
         )}
 
         {/* 2. Perimeter Fence (Lawn Edges) */}
-        {isBuilt('fence') && (
-          <div className="absolute top-40 left-4 right-4 h-12 flex justify-between pointer-events-none opacity-80 z-0">
+        {isBuilt('fence') ? (
+          <div
+            onClick={() => {
+              const task = SANCTUARY_TASKS.find(t => t.furnitureKey === 'fence');
+              if (task) onOpenStyleChooser(task);
+            }}
+            className="absolute top-40 left-4 right-4 h-12 flex justify-between cursor-pointer group z-0 transition-opacity hover:opacity-100 opacity-90"
+            title="Fence - Click to change style"
+          >
             <FenceVisual styleIdx={getStyleIdx('fence')} />
           </div>
+        ) : (
+          <UnbuiltMarker taskKey="fence" onOpenTasks={onOpenTasks} left="88%" top="32%" label="Build Fence" />
         )}
 
         {/* 3. Cat Tree / Scratching Post (Left Side) */}
@@ -292,24 +319,51 @@ export const SanctuaryView: React.FC<SanctuaryViewProps> = ({
         )}
 
         {/* 6. Flowerbeds & Catnip (Foreground edges) */}
-        {isBuilt('flowers') && (
-          <div className="absolute bottom-24 left-4 sm:left-12 pointer-events-none z-10">
+        {isBuilt('flowers') ? (
+          <div
+            onClick={() => {
+              const task = SANCTUARY_TASKS.find(t => t.furnitureKey === 'flowers');
+              if (task) onOpenStyleChooser(task);
+            }}
+            className="absolute bottom-24 left-4 sm:left-12 cursor-pointer group z-10 transition-transform hover:scale-105"
+            title="Catnip Flowers - Click to change style"
+          >
             <FlowersVisual styleIdx={getStyleIdx('flowers')} />
           </div>
+        ) : (
+          <UnbuiltMarker taskKey="flowers" onOpenTasks={onOpenTasks} left="14%" top="72%" label="Plant Flowers" />
         )}
 
         {/* 7. Sun Loungers (Poolside) */}
-        {isBuilt('loungers') && (
-          <div className="absolute top-32 right-1/4 pointer-events-none z-10">
+        {isBuilt('loungers') ? (
+          <div
+            onClick={() => {
+              const task = SANCTUARY_TASKS.find(t => t.furnitureKey === 'loungers');
+              if (task) onOpenStyleChooser(task);
+            }}
+            className="absolute top-32 right-1/4 cursor-pointer group z-10 transition-transform hover:scale-105"
+            title="Sun Loungers - Click to change style"
+          >
             <LoungersVisual styleIdx={getStyleIdx('loungers')} />
           </div>
+        ) : (
+          <UnbuiltMarker taskKey="loungers" onOpenTasks={onOpenTasks} left="72%" top="34%" label="Sun Loungers" />
         )}
 
         {/* 8. Feast Table (Bottom right) */}
-        {isBuilt('feast_table') && (
-          <div className="absolute bottom-28 right-4 sm:right-16 pointer-events-none z-10">
+        {isBuilt('feast_table') ? (
+          <div
+            onClick={() => {
+              const task = SANCTUARY_TASKS.find(t => t.furnitureKey === 'feast_table');
+              if (task) onOpenStyleChooser(task);
+            }}
+            className="absolute bottom-28 right-4 sm:right-16 cursor-pointer group z-10 transition-transform hover:scale-105"
+            title="Tuna Banquet - Click to change style"
+          >
             <FeastTableVisual styleIdx={getStyleIdx('feast_table')} />
           </div>
+        ) : (
+          <UnbuiltMarker taskKey="feast_table" onOpenTasks={onOpenTasks} left="84%" top="68%" label="Feast Table" />
         )}
 
         {/* PIPER (Calico Mix) Roaming Avatar */}

@@ -88,6 +88,36 @@ export default function App() {
     sounds.enabled = gameState.soundEnabled;
   }, [gameState.soundEnabled]);
 
+  // Passive life regeneration: +1 life every 15 minutes (900,000ms) up to maxLives
+  useEffect(() => {
+    const RECHARGE_INTERVAL_MS = 15 * 60 * 1000;
+    const interval = setInterval(() => {
+      setGameState(prev => {
+        if (prev.lives >= prev.maxLives) {
+          return { ...prev, lastLifeRechargeTime: Date.now() };
+        }
+        const now = Date.now();
+        const elapsed = now - prev.lastLifeRechargeTime;
+        if (elapsed >= RECHARGE_INTERVAL_MS) {
+          const livesToAdd = Math.min(
+            prev.maxLives - prev.lives,
+            Math.floor(elapsed / RECHARGE_INTERVAL_MS)
+          );
+          if (livesToAdd > 0) {
+            return {
+              ...prev,
+              lives: prev.lives + livesToAdd,
+              lastLifeRechargeTime: now
+            };
+          }
+        }
+        return prev;
+      });
+    }, 30000); // Check every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Start a puzzle level
   const handlePlayLevel = (levelId = gameState.currentLevelId) => {
     if (gameState.lives <= 0) {

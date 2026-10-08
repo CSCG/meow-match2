@@ -9,7 +9,7 @@ export function createTile(
   isMilkBottle = false
 ): Tile {
   return {
-    id: `t_${tileCounter++}_${Date.now()}`,
+    id: `t_${tileCounter++}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
     row,
     col,
     color,
@@ -460,10 +460,36 @@ export function resolvePowerUpSwap(
     return { clearedCoords: cleared, soundType: 'rocket', synergyType: 'ROCKET_BARRAGE' };
   }
 
-  // 4. Yarn Bomb + Normal Tile -> Removes all tiles of that color!
+  // 4. Yarn Bomb + Normal Tile OR Single Click -> Removes all tiles of target color!
   if (p1 === 'yarn_bomb' || p2 === 'yarn_bomb') {
-    const normalTile = p1 === 'yarn_bomb' ? t2 : t1;
-    const targetColor = normalTile.color;
+    const isSingle = (t1Pos.row === t2Pos.row && t1Pos.col === t2Pos.col) || (!p1 && p2 === 'yarn_bomb') || (!p2 && p1 === 'yarn_bomb');
+    let targetColor: TileColor;
+
+    if (t1Pos.row === t2Pos.row && t1Pos.col === t2Pos.col) {
+      // Direct click on yarn bomb: pick the most common color on board or objective color!
+      const colorCounts: Partial<Record<TileColor, number>> = {};
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const t = grid[r][c];
+          if (t && !t.isMilkBottle && !t.powerUp) {
+            colorCounts[t.color] = (colorCounts[t.color] || 0) + 1;
+          }
+        }
+      }
+      let bestColor: TileColor = level.allowedColors[0];
+      let maxCount = -1;
+      for (const [col, cnt] of Object.entries(colorCounts)) {
+        if ((cnt as number) > maxCount) {
+          maxCount = cnt as number;
+          bestColor = col as TileColor;
+        }
+      }
+      targetColor = bestColor;
+    } else {
+      const normalTile = p1 === 'yarn_bomb' ? t2 : t1;
+      targetColor = normalTile.color;
+    }
+
     const cleared: { row: number; col: number }[] = [t1Pos, t2Pos];
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
@@ -737,3 +763,40 @@ export function applyGravityAndRefill(
 
   return { newGrid, milkCollected };
 }
+
+/**
+ * Intelligent move scanner:
+ * Returns the coordinates of two tiles that can be swapped to make a valid move or activate a powerup.
+ * Used for idle hint sparkles and ensuring the board is never stuck.
+ */
+export function findPossibleMove(grid: (Tile | null)[][]): {
+  from: { row: number; col: number };
+  to: { row: number; col: number };
+} | null {
+  const rows = grid.length;
+  const cols = grid[0].length;
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const tile = grid[r][c];
+      if (!tile) continue;
+
+      // Check right neighbor
+      if (c + 1 < cols && grid[r][c + 1]) {
+        if (isValidMove(grid, r, c, r, c + 1)) {
+          return { from: { row: r, col: c }, to: { row: r, col: c + 1 } };
+        }
+      }
+
+      // Check down neighbor
+      if (r + 1 < rows && grid[r + 1][c]) {
+        if (isValidMove(grid, r, c, r + 1, c)) {
+          return { from: { row: r, col: c }, to: { row: r + 1, col: c } };
+        }
+      }
+    }
+  }
+
+  return null;
+}
+

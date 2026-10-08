@@ -10,7 +10,8 @@ import {
   isValidMove,
   resolvePowerUpSwap,
   applyGravityAndRefill,
-  findHomingTargets
+  findHomingTargets,
+  findPossibleMove
 } from '../game/match3Engine';
 import { sounds } from '../audio/soundManager';
 import { Volume2, VolumeX, Pause, Hammer, Hand, RefreshCw, Sparkles, Check, ArrowLeft } from 'lucide-react';
@@ -48,6 +49,7 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
   const [screenShake, setScreenShake] = useState(false);
   const [showOutOfMovesModal, setShowOutOfMovesModal] = useState(false);
   const [isVictory, setIsVictory] = useState(false);
+  const [hintTiles, setHintTiles] = useState<{ from: { row: number; col: number }; to: { row: number; col: number } } | null>(null);
 
   const activeCat = gameState.cats[gameState.activeCatId];
   const [showPauseModal, setShowPauseModal] = useState(false);
@@ -143,6 +145,32 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
   useEffect(() => {
     sounds.enabled = soundEnabled;
   }, [soundEnabled]);
+
+  // Idle timer for intelligent hints and dead-board reshuffle detection
+  useEffect(() => {
+    setHintTiles(null);
+    if (isProcessing || isVictory || showPauseModal || showOutOfMovesModal) return;
+
+    // Check if there are valid moves available
+    const possible = findPossibleMove(grid);
+    if (!possible) {
+      // Auto-shuffle board if no moves available
+      setCatSpeech("No moves left! Shuffling board...");
+      const timer = setTimeout(() => {
+        setGrid(initializeBoard(level));
+        sounds.playSwap();
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+
+    // Set 4.5s idle hint
+    const hintTimer = setTimeout(() => {
+      setHintTiles(possible);
+      setCatSpeech("Look closely! A match is waiting!");
+    }, 4500);
+
+    return () => clearTimeout(hintTimer);
+  }, [grid, isProcessing, isVictory, showPauseModal, showOutOfMovesModal, level]);
 
   // Check victory condition
   useEffect(() => {
@@ -666,6 +694,12 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
               row.map((tile, c) => {
                 const isPlayable = level.layout[r][c];
                 const isSelected = selectedPos?.row === r && selectedPos?.col === c;
+                const isHint = Boolean(
+                  hintTiles && (
+                    (hintTiles.from.row === r && hintTiles.from.col === c) ||
+                    (hintTiles.to.row === r && hintTiles.to.col === c)
+                  )
+                );
                 const grassLevel = grass[r] ? grass[r][c] : 0;
 
                 if (!isPlayable) {
@@ -695,6 +729,7 @@ export const PuzzleBoard: React.FC<PuzzleBoardProps> = ({
                         tile={tile}
                         size={tileSize}
                         isSelected={isSelected}
+                        isHint={isHint}
                         onTileClick={handleTileClick}
                       />
                     )}
