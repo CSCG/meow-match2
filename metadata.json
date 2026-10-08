@@ -1,0 +1,6 @@
+{
+  "name": "Meow Match Sanctuary",
+  "description": "A 1:1 Meow Match match-3 puzzle and cat sanctuary restoration game featuring Piper the Calico and Bodacious the Maine Coon.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
